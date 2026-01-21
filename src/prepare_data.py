@@ -1,5 +1,6 @@
 from pathlib import Path
 import pandas as pd
+import emoji
 import re 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -13,6 +14,9 @@ def clean_data(text):
   text=text.lower()
   text=re.sub(r'http\S+|www\S+','',text)#url remove no emotion
   text=re.sub(r'@\w+','',text)#mentions remove no emotion
+  text=re.sub(r'\d+','',text) #remove integer no emotion in it
+  text = emoji.replace_emoji(text, replace='')
+  re.sub(r'#(\w+)', r'\1', text)#only # remove
   text = re.sub(r'\s+', ' ', text).strip()#extra spaces
   return text
 
