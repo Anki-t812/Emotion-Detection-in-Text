@@ -9,14 +9,15 @@ DATA_PATH = BASE_DIR / "data" / "tweet_emotions.csv"
 df = pd.read_csv(DATA_PATH)
 df=df.drop(columns=['tweet_id'])
 df=df.drop_duplicates()
+df = df.dropna(subset=['content', 'sentiment'])
 
 def clean_data(text):
   text=text.lower()
   text=re.sub(r'http\S+|www\S+','',text)#url remove no emotion
   text=re.sub(r'@\w+','',text)#mentions remove no emotion
   text=re.sub(r'\d+','',text) #remove integer no emotion in it
-  text = emoji.replace_emoji(text, replace='')
-  re.sub(r'#(\w+)', r'\1', text)#only # remove
+  text=emoji.replace_emoji(text, replace='')
+  text=re.sub(r'#(\w+)', r'\1', text)#only # remove
   text = re.sub(r'\s+', ' ', text).strip()#extra spaces
   return text
 

@@ -1,5 +1,6 @@
 from pathlib import Path
 from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfVectorizer
 import pandas as pd
 
 BASE_DIR=Path(__file__).resolve().parent.parent
@@ -7,6 +8,8 @@ DATA_PATH=BASE_DIR/"data"/"clean_emotions.csv"
 
 df=pd.read_csv(DATA_PATH)
 
+df = df.dropna(subset=['content', 'sentiment'])
+##Splitiing of dataset
 X=df['content']
 y=df['sentiment']
 
@@ -17,11 +20,13 @@ X_train,X_test,y_train,y_test=train_test_split(
   stratify=y,       #same proportion on both test and train
   random_state=42   #for consistency of train_test
 )
-print("Original distribution:")
-print(y.value_counts(normalize=True))
 
-print("\nTrain distribution:")
-print(y_train.value_counts(normalize=True))
+vectorizer=TfidfVectorizer(
+  max_features=10000,   # max words in the dic of model
+  stop_words='english', # removes common words from language
+  ngram_range=(1,2)     # that many words will be taken like 'very good'&'not good'
+)
+X_train_tfidf=vectorizer.fit_transform(X_train)#learns vocab and calc TFIDF
 
-print("\nTest distribution:")
-print(y_test.value_counts(normalize=True))
+X_test_tfidf=vectorizer.transform(X_test)#use the vocab and ignore new words
+print(f"Matrix Shape: {X_train_tfidf.shape}")
